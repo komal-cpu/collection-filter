@@ -1,0 +1,183 @@
+<div class="fit_recipes">
+  <div class="container">
+    
+    <div class="sec_title">
+      <h2>{{section.settings.heading}}</h2>
+      <h4>{{section.settings.sub-heading}}</h4>
+      <p>{{section.settings.content}}
+</p>
+    </div>
+    
+    <div class="row">
+        {%- assign collection = section.settings.collection -%}
+      <div class="col-md-12">
+      <div class="filter_links ">
+        {%for tags in collection[collection].tags%}
+        {{tags}}
+        {%endfor%}
+
+        {% assign tags = section.settings.shop_by_tags_2_list_tags | split: ',' %} 
+        <ul class="advanced-filters">
+          <li class="jsActive result-clr reset-filter"> <a>All </a> </li>
+          {% for tag in tags %}
+          {% assign tag_value = tag | handleize %}
+          {%assign tagsplt = tag_value | split: '_' | first %}
+          {%assign tagspltl = tag_value | split: '_' | last %}
+          {% capture url %}/collections/{{ collection }}/{{ tag | handle }}{% endcapture %}
+          {% if current_tags contains tag %}
+          <li  data-group="{{tagsplt}}" data-handle="{{ tag | handle }}"
+              class="cat-loop jsActive year-filter-option advance-filters active-filter  {{ tagspltl }}">{{tagspltl | link_to: url }}</li>
+          {% else%}
+          <li data-group="{{tagsplt}}" data-handle="{{ tag | handle }}"
+              class="cat-loop jsActive year-filter-option advance-filters {{ tagspltl }}">{{tagspltl | link_to: url }}</li>
+          {%endif%}
+          {% endfor %}
+          {%if section.settings.pdf-text-url != blank %}
+          <li> 
+            <a class="btn_snake" target="_blank" href="{{section.settings.pdf-text-url}}">{{section.settings.pdf-text}}</a>
+          </li>
+          {%endif%}
+        </ul>
+      </div>
+          {%if section.settings.download_button_link != blank %}
+          <a class="btn-download" href="{{section.settings.download_button_link}}"><i class="fa fa-arrow-down" aria-hidden="true"></i>
+            {{section.settings.download_button_text}}</a>
+          {% endif %}
+          <div class="ajax-year-filter portal-blog-list for-bg">   
+        <div class="collection-page">
+          <div class="container_custom">        
+            <div class="products-grid product-grid-item">
+              <ul id="mylist" class="recipes_list programme-nutrition row">
+                {% for product in collections[section.settings.collection].products  %}
+                <li class="mylist_li col-md-3">
+                  <div class="round-block">
+                   
+                  <a class="pro_title" data-toggle="modal" data-target="#myModal-{{ forloop.index }}">
+                     <div class="img-box">
+                    {% for tagsss in product.tags %}
+                    {% if tagsss contains 'calories_' %}
+                    <span class="calorie_tags">Kcal {{ tagsss | remove: 'calories_' }}</span>
+                    {%endif%}
+                    {%endfor%}
+                    {% for image in product.images limit:1 %}
+                    {% assign featured_image = product.images.first | default: product.featured_image %}
+             
+                      <img src="{{ image.src | img_url: '1024x1024' }}" alt="">
+                      <form action="/cart/add" method="post" id="product-form-{{ product.id }}">   
+                        <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                        {% include 'wishl-wishlist' %}
+                      </form>
+                      <span class="icon"><i class="fa fa-heart" aria-hidden="true"></i></span>                       
+                    </div>
+                    {%else%}
+                    <div class="img-box">
+                      <img src="https://cdn.shopify.com/s/files/1/0277/1025/9297/files/fffffff.jpg?v=1577688936">
+                      <form action="/cart/add" method="post" id="product-form-{{ product.id }}">   
+                        <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                        {% include 'wishl-wishlist' %}
+                      </form>
+                      <span class="icon"><i class="fa fa-heart" aria-hidden="true"></i></span>  
+                    </div>
+                    {% endfor %}
+                    {%comment%}
+                    {% for tags in product.tags %}
+                    {% if tags contains 'vimeo_' %}
+                    {% assign vimeo = tags | split : 'vimeo_' %}
+                    <div class="window_content">	
+                      <div class="btn"> WATCH VIDEO <i class="fas fa-play"></i></div>
+                      <iframe class="hide" src="https://player.vimeo.com/video/{{ vimeo }}" width="640" height="360" frameborder=“0” allowfullscreen allow=autoplay></iframe>
+                    </div>           
+                    {% endif %}
+                    {% endfor %}
+                    {%endcomment%}
+                    
+                    {% for jwvideo in product.tags %}
+        {% if jwvideo contains 'jw_video_' %}
+        	{% assign jwvideom = jwvideo | split : 'jw_video_' %}
+                  <div class="window_content" data-src="https://content.jwplatform.com/videos/{{jwvideom}}.mp4">	
+                    <div class="btn"> WATCH VIDEO <i class="fas fa-play"></i></div>
+                  </div>           
+                 {% endif %}
+      {% endfor %}
+                    
+                    <div class="bottom">
+                      <h4>{{ product.title }}</h4> 
+                      <div style="display:none;">
+                      {% include 'nutrition_tag' %} 
+                      </div>
+                        <ul class="neutrition_list" >
+                              {% for tags in product.tags %}
+                          {% if tags contains 'Special Diet_' %}
+                        <li>
+                          {%- assign tagsplt = tags | remove: 'Special Diet_' -%}
+                          {%assign mediaa = tagsplt | split: ' ' %}
+                          {{ mediaa[0] | truncate: 1, ""}}{{mediaa[1]| truncate: 1, "" }}
+                        </li>
+                        {% endif %}
+                           {% endfor %}
+                          </ul>
+                    </div>
+                  </a>
+                  </div>
+                </li>   
+                {% endfor %}
+                 <div id="loadMore">View More</div>
+              </ul>
+
+            
+
+              {% for product in collections[section.settings.collection].products  %}
+              <div id="myModal-{{ forloop.index }}" role="dialog" class="modal recipe_modal">
+                  <div class="modal-content">
+                    <button type="button" class="close" data-dismiss="modal"> <i class="fas fa-times"></i> </button>
+                    <!-- Modal body -->
+                    <div class="modal-body round_modal">
+                      {% for image in product.images limit:1 %}
+                      <div class="title_block"> <h2>{{ product.title }}</h2> </div>
+                      <div class="img_box">
+                        <img src="{{ image.src | img_url: '750x750' }}" alt="">
+                      </div>
+                      {%else%}
+                      <div class="img_box">
+                        <img src="https://cdn.shopify.com/s/files/1/0277/1025/9297/files/fffffff.jpg?v=1577688936">
+                      </div>
+                      {% endfor %}
+                      <div class="content-box">
+                        <div class="row">
+                          <div class="col-sm-4">
+                                               
+                            <div class="modal-filter">
+                              <ul class="f-list">
+                                <li> <span>Easy</span> </li>
+                                {% for tags in product.tags %}
+                                
+                                {% if tags contains 'cook time_' %}
+                                <li> <span>Cook {{ tags | remove: 'cook time_' }}</span> </li>
+                                {% endif %}
+                                {% endfor %}
+
+                              </ul>
+                              {% include 'nutrition_tag' %}
+
+                            </div>
+                          </div>
+                          <div class="col-sm-8">
+                      
+                            <div class="prdescription">
+                              {{ product.description }}
+                            </div> 
+                          </div>
+                        </div>
+                      </div>
+                    </div>                    
+                </div>
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
