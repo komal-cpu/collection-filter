@@ -1,0 +1,156 @@
+<header class="collection-header">
+  {%- assign is_filter_by_available = false -%}
+  {%- if section.settings.tags_enable and collection.all_tags.size > 0 -%}
+  {%- assign is_filter_by_available = true -%}
+  {%- endif -%}
+
+  {%- assign is_vendor_or_type_collection = false -%}
+  {%- if collection.current_type != blank or collection.current_vendor != blank -%}
+  {%- assign is_vendor_or_type_collection = true -%}
+  {%- endif -%}
+
+  {% if section.settings.show_collection_image and collection.image %}
+  <div class="collection-hero">
+    <div class="collection-hero__image ratio-container lazyload js" data-bgset="{% include 'bgset', image: collection.image %}" data-sizes="auto" data-parent-fit="cover"
+         style="background-image: url('{{ collection.image | img_url: '300x300' }});"></div>
+    <noscript>
+      <div class="collection-hero__image" style="background-image: url({{ collection.image | img_url: '2048x600', crop: 'top' }});"></div>
+    </noscript>
+    <div class="collection-hero__title-wrapper">
+      <h1 class="collection-hero__title page-width">
+        <span role="text">
+          <span class="visually-hidden">{{ 'collections.general.collection_label' | t }}: </span>
+          {{ collection.title }}
+        </span>
+      </h1>
+    </div>
+  </div>
+  {% if is_filter_by_available == false and section.settings.sort_enable == false %}
+  <div class="container">
+    <span class="filters-toolbar__product-count">{{ 'collections.general.items_with_count' | t: count: collection.products_count }}</span>
+
+    {% endif %}
+    {% if collection.description != blank %}
+    <div class="rte collection-description page-width">
+      {{ collection.description }}
+    </div>
+    {% endif %}
+
+    {% endif %}
+    <!-- {% include 'nutrition-filter' %} -->
+  </div>
+</header>
+<div data-section-id="{{ section.id }}" data-section-type="collection-template" class="custom-filter">
+  <div class="c-food-list for-bg">
+
+    <div class="container collection-page" id="Collection">
+      <div class="container_custom">        
+        <div class="products-grid product-grid-item">
+
+          <ul id="mylist" class="recipes_list programme-nutrition row">
+            {% for product in collection.products %}
+
+            {% assign next_sub = 0  %}
+            {% for tagsss in customer.tags %}
+            {% if tagsss contains 'Subscriber' %}
+            {% assign next_sub = 1  %}
+            {% endif %}
+            {% endfor %}
+
+            {% include 'product-card-grid' %}
+
+            {% endfor %}
+
+          </ul>
+          <div id="loadMore"><span> View More </span></div>
+
+          {% for product in collection.products %}
+
+
+
+          <div id="myModal-{{ forloop.index }}" role="dialog" class="modal dash_popup">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal"> <i class="fal fa-times"></i> </button>
+                <!-- Modal body -->
+                <div class="modal-body round_modal recipe_modal">
+                  {% for image in product.images limit:1 %}
+                  <div class="img_box">
+                    <img src="{{ image.src | img_url: '1024x1024' }}" alt="">
+                  </div>
+                  {%else%}
+                  <div class="img_box">
+                    <img src="https://cdn.shopify.com/s/files/1/0277/1025/9297/files/fffffff.jpg?v=1577688936">
+                  </div>
+                  {% endfor %}
+                                     <div class="content-box">
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <div class="desktop-hide"> <h1>{{ product.title }}</h1>
+                            </div>
+                            <div class="modal-filter">
+                              <ul class="f-list">
+                                <li>
+                                  <div class="icon">
+                                    <img src="https://cdn.shopify.com/s/files/1/0520/8542/4317/files/easy.png?v=1609418318">
+                                  </div> <span>Easy</span> </li>
+                                {% for tags in product.tags %}
+
+                                {% if tags contains 'cook time_' %}
+                                <li><div class="icon">
+                                  <img src="https://cdn.shopify.com/s/files/1/0520/8542/4317/files/cook.png?v=1609418391">
+                                  </div> <span>Cook {{ tags | remove: 'cook time_' }}</span> </li>
+                                {% endif %}
+                                {% endfor %}
+
+                              </ul>
+                              {% include 'nutrition_tag' %}
+                            </div>
+                          </div>
+                          <div class="col-sm-9">
+                            <div class="mob-hide"> <h1>{{ product.title }}</h1>
+                            </div>
+                            <div class="prdescription">
+                              {{ product.description }}
+                            </div> 
+                          </div>
+                        </div>
+                      </div>
+                </div>                    
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+
+
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<script>
+  $(document).ready(function() {
+    loadafterproduct();
+  });
+
+  function loadafterproduct (){
+    console.log('hsgvsuehgi');
+    var size_li = $("#mylist li").size();
+    var x=8;
+    $('#mylist>li:lt('+x+')').css('display','inline-block')
+
+    $(document).on('click', '#loadMore', function(){
+      x= (x+4 <= size_li) ? x+8 : size_li;
+      $('#mylist>li:lt('+x+')').css('display','inline-block');
+      if(x == size_li){
+        $('#loadMore').css('display','none');
+      }
+    })
+  }
+</script>
