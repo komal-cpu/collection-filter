@@ -1,0 +1,103 @@
+## with popup of filter
+
+
+
+<script>
+  $(document).ready(function() {
+    var size_li = $("#mylist .mylist_li").size();
+   console.log(size_li);
+    var x = 8;
+    $('#mylist>li:lt('+x+')').css('display','inline-block');
+    
+    $(document).on('click', '#loadMore', function(){
+     x= (x+4 <= size_li) ? x+8 : size_li;
+     console.log(x);
+      $('#mylist>li:lt('+x+')').css('display','inline-block')
+      if(x == size_li){
+        $('#loadMore').css('display','none');
+      }
+    })
+  });
+  
+
+  
+  function show_recepies(){
+    var size_li = $("#mylist li").size();
+    var x=8;
+    $('#mylist>li:lt('+x+')').css('display','inline-block')
+  }
+  
+  
+    $("body").on('DOMSubtreeModified', "#mylist", function() {
+    show_recepies();
+    console.log('dvdvSd');
+});
+</script>
+<style>
+#mylist .mylist_li{ display:none;}
+</style>
+<script>
+  $(function() { 
+    var  activeYear  = $('.year-filter-option [data-group="year"]').data('handle');
+    var  caloryfilter  = $('.caloy-list option:selected').data('handle');
+    $('ul li.jsActive:first-child').addClass('active');
+    $(document).on('change', '.caloy-list', function(e){
+      e.preventDefault();
+      el = $('option:selected');
+      caloryfilter = el.data('handle');
+      filter_data();
+    });
+  $(document).on('click', '.reset-filter', function(e){
+    var get_url = window.location.origin+'/pages/fitness-programme';
+    $('.jsActive').removeClass('active');
+    $(this).addClass('active');
+    $('.container_custom').html('<div class="_jsLoaderDiv"><img class="_jsLoader" src="https://cdn.shopify.com/s/files/1/0520/8542/4317/files/1_ajax-loader.gif?v=1609501253" ></div>');
+    $.get(get_url, function(data){
+      $content =  $(data).find('.collection-page').html();
+      $('.container_custom').html($content); 
+      show_recepies();
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+  });
+    $(document).on('click', '.year-filter-option', function(e){
+      e.preventDefault();
+      $('.jsActive').removeClass('active');
+      $(this).addClass('active');
+      el = $(this);
+      activeYear = el.data('handle');
+      //alert(activeYear);
+      filter_data(); 
+    });
+    function filter_data(){
+      var base_url = window.location.origin+'/collections/{{ collection }}/';
+      var slug = '';
+      if(activeYear || caloryfilter){
+        slug += '';   
+      }
+
+      if(activeYear){
+        slug += activeYear;   
+      }
+
+      if(activeYear && caloryfilter){
+        slug += '+';
+      } 
+
+      if(caloryfilter){
+        slug += caloryfilter;   
+      }
+
+      var get_url = base_url+slug;
+      $('.container_custom').html('<div class="_jsLoaderDiv"><img class="_jsLoader" src="https://cdn.shopify.com/s/files/1/0520/8542/4317/files/1_ajax-loader.gif?v=1609501253" ></div>');
+      $.get(get_url, function(data){
+        $content =  $(data).find('.collection-page').html();
+        $('.container_custom').html($content); 
+        show_recepies();
+        $('[data-toggle="tooltip"]').tooltip();
+
+      });
+    }  
+  });
+
+
+</script>
